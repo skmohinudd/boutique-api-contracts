@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cart",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["userId", "items", "totalItems", "subtotal", "currency"],
+  "properties": {
+    "userId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "cart-item.schema.json"
+      }
+    },
+    "totalItems": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "subtotal": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3
+    }
+  }
+}

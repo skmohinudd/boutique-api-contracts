@@ -1,0 +1,41 @@
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://boutique.example.com/schemas/user/create-user.schema.json",
+  "title": "CreateUserRequest",
+  "description": "Request used to create a new Boutique user profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "email",
+    "firstName",
+    "lastName"
+  ],
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320
+    },
+    "firstName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "phoneNumber": {
+      "type": ["string", "null"],
+      "maxLength": 30
+    },
+    "cognitoSub": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Amazon Cognito subject identifier. Optional during local development."
+    }
+  }
+}

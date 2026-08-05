@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://boutique.example.com/schemas/user/update-user.schema.json",
+  "title": "UpdateUserRequest",
+  "description": "Request used to update editable user-profile fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "firstName",
+    "lastName"
+  ],
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "phoneNumber": {
+      "type": ["string", "null"],
+      "maxLength": 30
+    }
+  }
+}

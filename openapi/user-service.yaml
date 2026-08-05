@@ -1,0 +1,224 @@
+openapi: 3.1.0
+
+info:
+  title: Boutique User Service API
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+  description: >
+    Manages Boutique customer profiles. Authentication will eventually
+    be performed by Amazon Cognito; this service owns application profile data.
+
+servers:
+  - url: http://localhost:8082
+    description: Local development
+
+security:
+  - bearerAuth: []
+  
+tags:
+  - name: Users
+    description: User-profile operations
+
+paths:
+  /api/v1/users:
+    post:
+      security: []
+      tags:
+        - Users
+      operationId: createUser
+      summary: Create a user profile
+      description: Creates a new Boutique user profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/user/create-user.schema.json
+      responses:
+        "201":
+          description: User created successfully
+          headers:
+            Location:
+              description: URI of the created user
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/user/user.schema.json
+
+        "400":
+          description: Request validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "409":
+          description: Email or Cognito identity already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "500":
+          description: Unexpected server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+  /api/v1/users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User UUID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags:
+        - Users
+      operationId: getUser
+      summary: Get a user profile
+      responses:
+        "200":
+          description: User profile returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/user/user.schema.json
+
+        "400":
+          description: Invalid user identifier
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "404":
+          description: User was not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "500":
+          description: Unexpected server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+    put:
+      tags:
+        - Users
+      operationId: updateUser
+      summary: Update a user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/user/update-user.schema.json
+      responses:
+        "200":
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/user/user.schema.json
+
+        "400":
+          description: Request validation failed
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "404":
+          description: User was not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "409":
+          description: Concurrent modification conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "500":
+          description: Unexpected server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+  /api/v1/users/{userId}/deactivate:
+    post:
+      tags:
+        - Users
+      operationId: deactivateUser
+      summary: Deactivate a user
+      description: >
+        Marks the user profile as INACTIVE without physically deleting
+        the database record.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: User deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/user/user.schema.json
+
+        "400":
+          description: Invalid user identifier
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "404":
+          description: User was not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "409":
+          description: User state cannot be changed
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+        "500":
+          description: Unexpected server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        JWT access token issued by Amazon Cognito in production.

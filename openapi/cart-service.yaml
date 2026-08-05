@@ -1,0 +1,204 @@
+openapi: 3.1.0
+
+info:
+  title: Boutique Cart Service API
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+  description: Manages temporary user shopping carts backed by Redis.
+
+servers:
+  - url: http://localhost:8083
+    description: Local development
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/carts/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getCart
+      summary: Get a user's cart
+      responses:
+        '200':
+          description: Cart returned
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/cart/cart.schema.json
+        '404':
+          description: User or cart resource not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '503':
+          description: A dependency is unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+    delete:
+      operationId: clearCart
+      summary: Clear a user's cart
+      responses:
+        '204':
+          description: Cart cleared
+        '404':
+          description: User not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '503':
+          description: A dependency is unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+  /api/v1/carts/{userId}/items:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: addCartItem
+      summary: Add a product to a cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/cart/add-cart-item.schema.json
+      responses:
+        '201':
+          description: Item added
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/cart/cart.schema.json
+        '400':
+          description: Invalid request
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '404':
+          description: User, product, or inventory not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '409':
+          description: Invalid quantity, user state, or product state
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '503':
+          description: A dependency is unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+  /api/v1/carts/{userId}/items/{productId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    put:
+      operationId: updateCartItem
+      summary: Replace a cart item's quantity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/cart/update-cart-item.schema.json
+      responses:
+        '200':
+          description: Cart item updated
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/cart/cart.schema.json
+        '400':
+          description: Invalid request
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '409':
+          description: Invalid cart operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '503':
+          description: A dependency is unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+    delete:
+      operationId: removeCartItem
+      summary: Remove a product from a cart
+      responses:
+        '200':
+          description: Product removed
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/cart/cart.schema.json
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+        '503':
+          description: A dependency is unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../schemas/common/error-response.schema.json
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

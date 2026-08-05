@@ -1,0 +1,170 @@
+openapi: 3.1.0
+info:
+  title: Boutique Product Catalog Service API
+  description: REST API for creating and retrieving products in the Boutique microservices
+    platform.
+  contact:
+    name: Boutique Platform Engineering Team
+  license:
+    name: Internal Project
+  version: v1
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Products
+  description: Product catalogue management APIs
+paths:
+  /api/v1/products:
+    get:
+      tags:
+      - Products
+      summary: Get all products
+      description: Returns all products currently stored in the catalogue.
+      operationId: getAllProducts
+      responses:
+        "200":
+          description: Products returned successfully
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResponse"
+    post:
+      tags:
+      - Products
+      summary: Create a product
+      description: Creates a new active product in the catalogue.
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+        required: true
+      responses:
+        "201":
+          description: Product created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Invalid request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "409":
+          description: SKU already exists
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+  /api/v1/products/{productId}:
+    get:
+      tags:
+      - Products
+      summary: Get product by ID
+      description: Returns one product using its UUID.
+      operationId: getProductById
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Product found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Invalid UUID
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+components:
+  schemas:
+    CreateProductRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          maxLength: 100
+          minLength: 0
+        name:
+          type: string
+          maxLength: 200
+          minLength: 0
+        description:
+          type: string
+          maxLength: 2000
+          minLength: 0
+        category:
+          type: string
+          maxLength: 100
+          minLength: 0
+        price:
+          type: number
+          minimum: 0.00
+        currency:
+          type: string
+          maxLength: 3
+          minLength: 3
+        imageUrl:
+          type: string
+          maxLength: 1000
+          minLength: 0
+      required:
+      - category
+      - currency
+      - description
+      - name
+      - price
+      - sku
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        imageUrl:
+          type: string
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64

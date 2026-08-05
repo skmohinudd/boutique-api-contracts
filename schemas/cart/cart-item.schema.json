@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CartItem",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "productId",
+    "sku",
+    "name",
+    "unitPrice",
+    "currency",
+    "quantity",
+    "sellableQuantity",
+    "available",
+    "lineTotal"
+  ],
+  "properties": {
+    "productId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "imageUrl": {
+      "type": ["string", "null"]
+    },
+    "unitPrice": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99
+    },
+    "sellableQuantity": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "available": {
+      "type": "boolean"
+    },
+    "lineTotal": {
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}
